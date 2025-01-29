@@ -1,73 +1,29 @@
-// Program.cs
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 
 class Program
 {
     static void Main(string[] args)
     {
-        string filePath = "scriptures.txt";
-        List<Scripture> scriptures = LoadScripturesFromFile(filePath);
+        Reference reference = new Reference("Proverbs", 3, 5, 6);
+        Scripture scripture = new Scripture(reference, "Trust in the Lord with all your heart and lean not on your own understanding. In all your ways acknowledge him, and he will make your paths straight.");
 
-        if (scriptures.Count == 0)
-        {
-            Console.WriteLine("No scriptures available.");
-            return;
-        }
-
-        Random random = new Random();
-        Scripture selectedScripture = scriptures[random.Next(scriptures.Count)];
-
-        while (!selectedScripture.AllWordsHidden)
+        while (!scripture.IsFullyHidden())
         {
             Console.Clear();
-            Console.WriteLine(selectedScripture.DisplayText);
+            Console.WriteLine(scripture.GetDisplayText());
+            Console.WriteLine("\nPress Enter to continue or type 'quit' to exit.");
 
-            Console.WriteLine("\nPress Enter to hide words, or type 'quit' to exit.");
-            string input = Console.ReadLine();
-
-            if (input.ToLower() == "quit")
+            string input = Console.ReadLine().Trim().ToLower();
+            if (input == "quit")
                 break;
 
-            selectedScripture.HideRandomWords();
+            scripture.HideRandomWords(3); 
         }
 
         Console.Clear();
-        Console.WriteLine("Final Scripture:");
-        Console.WriteLine(selectedScripture.DisplayText);
-        Console.WriteLine("\nThank you for using Scripture Memorizer!");
-    }
-
-    static List<Scripture> LoadScripturesFromFile(string filePath)
-    {
-        List<Scripture> scriptures = new List<Scripture>();
-
-        if (!File.Exists(filePath))
-        {
-            Console.WriteLine($"File not found: {filePath}");
-            return scriptures;
-        }
-
-        string[] lines = File.ReadAllLines(filePath);
-        foreach (string line in lines)
-        {
-            string[] parts = line.Split('|');
-            if (parts.Length == 5)
-            {
-                string book = parts[0];
-                int chapter = int.Parse(parts[1]);
-                int startVerse = int.Parse(parts[2]);
-                int endVerse = int.Parse(parts[3]);
-                string text = parts[4];
-
-                var reference = new ScriptureReference(book, chapter, startVerse, endVerse);
-                scriptures.Add(new Scripture(reference, text));
-            }
-        }
-
-        return scriptures;
+        Console.WriteLine(scripture.GetDisplayText());
+        Console.WriteLine("\nMemorization complete!");
     }
 }
-
-//the program load scriptures from a file #scriptures.txt
